@@ -75,3 +75,7 @@ async def chat(req: ChatRequest):
         event_generator(req.message),
         media_type="text/event-stream",
     )
+    
+@app.get("/health")
+async def root():
+    return {"health": "Ok"}
