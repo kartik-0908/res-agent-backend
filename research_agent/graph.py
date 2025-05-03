@@ -258,10 +258,10 @@ async def build_section_with_book_research(state: ReportState, config: RunnableC
         Dict with book research results
     """
     files = [
-        "/home/kartik/open_deep_research/pdf/Harrison's Cardiology (1).pdf",
-        "/home/kartik/open_deep_research/pdf/heidenreich-et-al-2022-2022-aha-acc-hfsa-guideline-for-the-management-of-heart-failure-a-report-of-the-american-college.pdf",
-        "/home/kartik/open_deep_research/pdf/usmle-step2-cardio_35-70.pdf",
-        "/home/kartik/open_deep_research/pdf/USMLE1cardio_304-349.pdf"
+        "../pdf/Harrison's Cardiology (1).pdf",
+        "../pdf/heidenreich-et-al-2022-2022-aha-acc-hfsa-guideline-for-the-management-of-heart-failure-a-report-of-the-american-college.pdf",
+        "../pdf/usmle-step2-cardio_35-70.pdf",
+        "../pdf/USMLE1cardio_304-349.pdf"
     ]
     pages = []
     for file in files:
