@@ -22,6 +22,7 @@ from langchain_community.document_loaders import PyPDFLoader
 from utils.utils import format_sections
 from google import genai
 from utils.llm import llm_o1
+from pathlib import Path
 
 gemini_api_key = os.environ.get("GOOGLE_GENAI_API_KEY")
 
@@ -257,12 +258,16 @@ async def build_section_with_book_research(state: ReportState, config: RunnableC
     Returns:
         Dict with book research results
     """
+    BASE = Path(__file__).parent.parent   # adjust as needed
+    pdf_dir = BASE / "pdf"
+    
     files = [
-        "../pdf/Harrison's Cardiology (1).pdf",
-        "../pdf/heidenreich-et-al-2022-2022-aha-acc-hfsa-guideline-for-the-management-of-heart-failure-a-report-of-the-american-college.pdf",
-        "../pdf/usmle-step2-cardio_35-70.pdf",
-        "../pdf/USMLE1cardio_304-349.pdf"
+    pdf_dir / "Harrison's Cardiology (1).pdf",
+    pdf_dir / "heidenreich-et-al-2022-2022-aha-acc-hfsa-guideline-for-the-management-of-heart-failure-a-report-of-the-american-college.pdf",
+    pdf_dir / "usmle-step2-cardio_35-70.pdf",
+    pdf_dir / "USMLE1cardio_304-349.pdf",
     ]
+
     pages = []
     for file in files:
         loader = PyPDFLoader(file)
