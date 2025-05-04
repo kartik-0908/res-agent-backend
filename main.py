@@ -58,16 +58,28 @@ def transform_chunk(chunk_str: str) -> dict:
     return {"type": "unhandled_chunk", "raw": chunk_str}
 
 async def event_generator(topic: str):
-    async for chunk in graph.astream(input={"topic": topic}, stream_mode="updates"):
-        logging.debug("raw chunk: %r", chunk)
+    last_payload = None
+    queue = asyncio.Queue()
+    
+    
+    async def fetch_chunks():
+        async for chunk in graph.astream(input={"topic": topic}, stream_mode="updates"):
+            payload = transform_chunk(str(chunk))
+            await queue.put(payload)
+    
+    fetch_task = asyncio.create_task(fetch_chunks())
 
-        # transform and serialize
-        print(chunk)
-        payload = transform_chunk(str(chunk))
-        print(f"payload: {payload}")
-        yield f"data: {json.dumps(payload)}\n\n"
-
-        await asyncio.sleep(0)
+    while True:
+        try:
+            payload = await asyncio.wait_for(queue.get(), timeout=1.0)
+            last_payload = payload
+            yield f"data: {json.dumps(payload)}\n\n"
+        except asyncio.TimeoutError:
+            # No new data in the last second, send still_previous if we have sent something before
+            if last_payload is not None:
+                yield f"data: {json.dumps({'type': 'still_previous'})}\n\n"
+        if fetch_task.done() and queue.empty():
+            break
 
 @app.post("/chat/stream")
 async def chat(req: ChatRequest):
