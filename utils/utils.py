@@ -1,7 +1,5 @@
 from research_agent.state import Section
 import httpx
-from bs4 import BeautifulSoup
-from urllib.parse import urljoin
 
 def format_sections(sections: list[Section]) -> str:
     """ Format a list of sections into a string """
