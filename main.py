@@ -8,13 +8,18 @@ from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from research_agent.graph import graph
+from utils.utils import fetch_favicon_and_title
 
 app = FastAPI()
 
 class ChatRequest(BaseModel):
     message: str
+    
+async def enrich_urls(urls):
+    return await asyncio.gather(*(fetch_favicon_and_title(url) for url in urls))
 
-def transform_chunk(chunk_str: str) -> dict:
+
+async def transform_chunk(chunk_str: str) -> dict:
     """
     Take the raw chunk (a string), detect key sections, and
     extract URLs via regex when needed.
@@ -47,11 +52,12 @@ def transform_chunk(chunk_str: str) -> dict:
             "final_report": final_text
         }
     if "build_section_with_web_research" in chunk_str:
-        # find all http(s) URLs
         urls = re.findall(r'https?://[^\s\'"]+', chunk_str)
+        unique_urls = list(set(urls))
+        enriched = await enrich_urls(unique_urls)
         return {
-            "type": "section_with_web_research",
-            "research_urls": urls,
+        "type": "section_with_web_research",
+        "research_urls": enriched,
         }
 
     # catch-all
@@ -64,7 +70,7 @@ async def event_generator(topic: str):
     
     async def fetch_chunks():
         async for chunk in graph.astream(input={"topic": topic}, stream_mode="updates"):
-            payload = transform_chunk(str(chunk))
+            payload = await transform_chunk(str(chunk))
             await queue.put(payload)
     
     fetch_task = asyncio.create_task(fetch_chunks())
