@@ -37,7 +37,7 @@ async def fetch_favicon_and_title(url: str) -> dict:
     except httpx.HTTPError as e:
         print(f"[fetch][ERROR] calling metadata API: {e}")
         # Fallback to empty values or re-raise, as you prefer
-        return {"url": url, "title": "", "favicon": ""}
+        return {"url": url, "title": url, "favicon": url+"/favicon.ico"}
 
     print(f"[fetch][INFO] metadata API response: {data}")
     return data
