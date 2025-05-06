@@ -8,6 +8,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy source
 COPY . .
 
-EXPOSE 8080
+EXPOSE 3001
 
-CMD ["uvicorn", "res_agent_backend.main:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "3001"]
