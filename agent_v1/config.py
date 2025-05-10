@@ -33,8 +33,8 @@ class SearchAPI(Enum):
 class Configuration:
     """The configurable fields for the chatbot."""
     report_structure: str = DEFAULT_REPORT_STRUCTURE # Defaults to the default report structure
-    number_of_queries: int = 2 # Number of search queries to generate per iteration
-    max_search_depth: int = 2 # Maximum number of reflection + search iterations
+    number_of_queries: int = 5 # Number of search queries to generate per iteration
+    max_search_depth: int = 5 # Maximum number of reflection + search iterations
     planner_provider: str = "azure_openai"  # Defaults to Anthropic as provider
     planner_model: str = "o1" # Defaults to claude-3-7-sonnet-latest
     writer_provider: str = "azure_openai"  # Defaults to Anthropic as provider

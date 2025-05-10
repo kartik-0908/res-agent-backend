@@ -1,5 +1,4 @@
 import json
-import logging
 import asyncio
 import re
 from typing import Any
@@ -8,12 +7,17 @@ from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from research_agent.graph import graph
+from agent_v1.graph import v1
 from utils.utils import fetch_favicon_and_title
 
 app = FastAPI()
 
 class ChatRequest(BaseModel):
     message: str
+    
+class ChatRequestv1(BaseModel):
+    message: str
+    thread_id: str
     
 async def enrich_urls(urls):
     return await asyncio.gather(*(fetch_favicon_and_title(url) for url in urls))
@@ -93,6 +97,15 @@ async def chat(req: ChatRequest):
         event_generator(req.message),
         media_type="text/event-stream",
     )
+    
+@app.post("/chat/v1")
+async def chat_final(req: ChatRequestv1):
+    result = await v1.invoke({"messages":[{"role": "user", "content": req.message}]},
+                             config={"configurable": {"thread_id": req.thread_id}},
+                             )
+    print(result)
+    return result
+
     
 @app.get("/health")
 async def root():
